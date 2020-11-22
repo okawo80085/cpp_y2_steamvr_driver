@@ -1,1 +1,1 @@
-# c++ study group, year 2, we made a steamvr driver
+# c++ study group, year 2, we made a steamvr driver (not gay porn)
