@@ -83,7 +83,7 @@ static const char* const k_pch_Hmd_UserHead2EyeDepthMeters_Float = "UserHeadToEy
 class OurDevice: public hobovr::HobovrDevice<false, false> {
 public:
   OurDevice(std::string ser):HobovrDevice(ser, "asdfnjkl") {
-    m_sRenderModelPath = "{vasiliy}/rendermodels/hobovr_hmd_mh0"; 
+    m_sRenderModelPath = "{vasiliy}/rendermodels/hobovr_tracker_mt0"; 
     m_sBindPath = "{vasiliy}/input/hobovr_tracker_profile.json";
   }
 
