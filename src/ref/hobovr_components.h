@@ -10,7 +10,7 @@ namespace hobovr {
   };
 
   // ext display component keys
-  static const char *const k_pch_ExtDisplay_Section = "hobovr_comp_extendedDisplay";
+  static const char *const k_pch_ExtDisplay_Section = "vasiliy_comp_extendedDisplay";
   static const char *const k_pch_ExtDisplay_WindowX_Int32 = "windowX";
   static const char *const k_pch_ExtDisplay_WindowY_Int32 = "windowY";
   static const char *const k_pch_ExtDisplay_WindowWidth_Int32 = "windowWidth";

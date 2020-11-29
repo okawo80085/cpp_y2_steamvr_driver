@@ -60,11 +60,11 @@ inline HmdQuaternion_t HmdQuaternion_Init(double w, double x, double y,
 
 // keys for use with the settings API
 // driver keys
-static const char *const k_pch_Hobovr_Section = "driver_hobovr";
+static const char *const k_pch_Hobovr_Section = "driver_vasiliy";
 static const char *const k_pch_Hobovr_UduDeviceManifestList_String = "DeviceManifestList";
 
 // hmd device keys
-static const char *const k_pch_Hmd_Section = "hobovr_device_hmd";
+static const char *const k_pch_Hmd_Section = "vasiliy_device_hmd";
 static const char *const k_pch_Hmd_SecondsFromVsyncToPhotons_Float = "secondsFromVsyncToPhotons";
 static const char *const k_pch_Hmd_DisplayFrequency_Float = "displayFrequency";
 static const char* const k_pch_Hmd_IPD_Float = "IPD";
@@ -83,8 +83,8 @@ static const char* const k_pch_Hmd_UserHead2EyeDepthMeters_Float = "UserHeadToEy
 class OurDevice: public hobovr::HobovrDevice<false, false> {
 public:
   OurDevice(std::string ser):HobovrDevice(ser, "asdfnjkl") {
-    m_sRenderModelPath = "{hobovr}/rendermodels/hobovr_hmd_mh0"; 
-    m_sBindPath = "{hobovr}/input/hobovr_hmd_profile.json";
+    m_sRenderModelPath = "{vasiliy}/rendermodels/hobovr_hmd_mh0"; 
+    m_sBindPath = "{vasiliy}/input/hobovr_hmd_profile.json";
   }
 
   EVRInitError Activate(vr::TrackedDeviceIndex_t unObjectId) {
