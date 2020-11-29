@@ -138,6 +138,7 @@ private:
   float y = 0.0;
   float z = 0.0;
   float w = 0.0;
+  std::vector<float> VR;
   std::shared_ptr<OurDevice> device;
 };
 
@@ -150,6 +151,8 @@ EVRInitError CServerDriver_hobovr::Init(vr::IVRDriverContext *pDriverContext) {
                             hobovr::k_nHobovrVersionMinor,
                             hobovr::k_nHobovrVersionBuild,
                             hobovr::k_sHobovrVersionGG.c_str());
+
+  VR = { 0, 0, 0, 1, 0, 0, 0 };
 	
   device = std::make_shared<OurDevice>("glhf");
   vr::VRServerDriverHost()->TrackedDeviceAdded(
@@ -209,14 +212,14 @@ void CServerDriver_hobovr::RunFrame() {
     x = 0.0;
     y = sin(thetaOver2);
     z = 0.0;
-    w = np.cos(thetaOver2);
+    w = cos(thetaOver2);
 
     VR[3] = w;
     VR[4] = x;
     VR[5] = y;
     VR[6] = z;
 
-    my_device.RanFrame(VR);
+    device->RunFrame(VR);
   
   vr::VREvent_t vrEvent;
   while (vr::VRServerDriverHost()->PollNextEvent(&vrEvent, sizeof(vrEvent))) {
