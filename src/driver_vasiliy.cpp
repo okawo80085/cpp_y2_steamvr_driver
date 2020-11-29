@@ -208,7 +208,7 @@ void CServerDriver_hobovr::RunFrame() {
       VR[1]-=0.01;
     }
 	
-    if (GetAsyncKeyState(0x52)) { // R 
+    if (GetAsyncKeyState(0x52)) { // R reset
       VR[0] = 0.0;
       VR[1] = 0.0;
       VR[2] = 0.0;
