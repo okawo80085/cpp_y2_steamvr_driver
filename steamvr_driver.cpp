@@ -115,23 +115,6 @@ public:
   }
 };
 
-int main()
-{
-  auto my_device = OurDevice("lol");
-  
-  std::vector<float> VR = {0, 0, 0, 1, 0, 0, 0};
-  
-  while (true) {
-    if (GetAsyncKeyState(0x20)) { // Space prijok
-      VR[1]+=0.10;
-      my_device.RanFrame(VR);
-      std::this_thread::sleep_for(std::chrono::seconds(1)); // m9co
-      VR[1]-=0.10;
-    }
-  }
-}
-
-
 //-----------------------------------------------------------------------------
 // Purpose: serverDriver
 //-----------------------------------------------------------------------------
