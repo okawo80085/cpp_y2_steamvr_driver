@@ -169,45 +169,51 @@ void CServerDriver_hobovr::Cleanup() {
 
 void CServerDriver_hobovr::RunFrame() {
   	
-  	// do something with VR
+    // do something with VR
     if (GetAsyncKeyState(0x25)) // Left arrow (strelochka vlevo) povorot vlevo
     {
-      theta-=0.001;
+      theta-=0.01;
     }
     
     if (GetAsyncKeyState(0x27)) // Right arrow (strelochka vpravo) povorot vpravo
     {
-      theta+=0.001;
+      theta+=0.01;
     }
     
     if (GetAsyncKeyState(0x53) != 0) // S nazad
     {       
-      VR[2]+=0.10; 
+      VR[2]+=0.01; 
     }
     
     if (GetAsyncKeyState(0x57)) // W vpered
     {
-      VR[2]-=0.10; 
+      VR[2]-=0.01; 
     }
     
     if (GetAsyncKeyState(0x41)) // A vlevo
     {
-      VR[0]-=0.10;
+      VR[0]-=0.01;
     }
     
     if (GetAsyncKeyState(0x44)) // D vpravo
     {
-      VR[0]+=0.10;
+      VR[0]+=0.01;
     }
     
     if (GetAsyncKeyState(0x51)) { // Q vverh
-      VR[1]+=0.10;
+      VR[1]+=0.01;
     }
     
     if (GetAsyncKeyState(0x45)) { // E vniz
-      VR[1]-=0.10;
+      VR[1]-=0.01;
     }
-    
+	
+    if (GetAsyncKeyState(0x52)) { // R 
+      VR[0] = 0.0;
+      VR[1] = 0.0;
+      VR[2] = 0.0;
+    }
+	
     thetaOver2 = theta * 0.5;
     x = 0.0;
     y = sin(thetaOver2);
