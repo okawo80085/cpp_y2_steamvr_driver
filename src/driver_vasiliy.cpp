@@ -84,7 +84,7 @@ class OurDevice: public hobovr::HobovrDevice<false, false> {
 public:
   OurDevice(std::string ser):HobovrDevice(ser, "asdfnjkl") {
     m_sRenderModelPath = "{vasiliy}/rendermodels/hobovr_hmd_mh0"; 
-    m_sBindPath = "{vasiliy}/input/hobovr_hmd_profile.json";
+    m_sBindPath = "{vasiliy}/input/hobovr_tracker_profile.json";
   }
 
   EVRInitError Activate(vr::TrackedDeviceIndex_t unObjectId) {
