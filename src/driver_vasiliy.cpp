@@ -60,11 +60,11 @@ inline HmdQuaternion_t HmdQuaternion_Init(double w, double x, double y,
 
 // keys for use with the settings API
 // driver keys
-static const char *const k_pch_Hobovr_Section = "driver_hobovr";
+static const char *const k_pch_Hobovr_Section = "driver_vasiliy";
 static const char *const k_pch_Hobovr_UduDeviceManifestList_String = "DeviceManifestList";
 
 // hmd device keys
-static const char *const k_pch_Hmd_Section = "hobovr_device_hmd";
+static const char *const k_pch_Hmd_Section = "vasiliy_device_hmd";
 static const char *const k_pch_Hmd_SecondsFromVsyncToPhotons_Float = "secondsFromVsyncToPhotons";
 static const char *const k_pch_Hmd_DisplayFrequency_Float = "displayFrequency";
 static const char* const k_pch_Hmd_IPD_Float = "IPD";
@@ -83,8 +83,8 @@ static const char* const k_pch_Hmd_UserHead2EyeDepthMeters_Float = "UserHeadToEy
 class OurDevice: public hobovr::HobovrDevice<false, false> {
 public:
   OurDevice(std::string ser):HobovrDevice(ser, "asdfnjkl") {
-    m_sRenderModelPath = "{hobovr}/rendermodels/hobovr_hmd_mh0"; 
-    m_sBindPath = "{hobovr}/input/hobovr_hmd_profile.json";
+    m_sRenderModelPath = "{vasiliy}/rendermodels/hobovr_tracker_mt0"; 
+    m_sBindPath = "{vasiliy}/input/hobovr_tracker_profile.json";
   }
 
   EVRInitError Activate(vr::TrackedDeviceIndex_t unObjectId) {
@@ -138,6 +138,7 @@ private:
   float y = 0.0;
   float z = 0.0;
   float w = 0.0;
+  std::vector<float> VR;
   std::shared_ptr<OurDevice> device;
 };
 
@@ -150,6 +151,8 @@ EVRInitError CServerDriver_hobovr::Init(vr::IVRDriverContext *pDriverContext) {
                             hobovr::k_nHobovrVersionMinor,
                             hobovr::k_nHobovrVersionBuild,
                             hobovr::k_sHobovrVersionGG.c_str());
+
+  VR = { 0, 0, 0, 1, 0, 0, 0 };
 	
   device = std::make_shared<OurDevice>("glhf");
   vr::VRServerDriverHost()->TrackedDeviceAdded(
@@ -166,57 +169,63 @@ void CServerDriver_hobovr::Cleanup() {
 
 void CServerDriver_hobovr::RunFrame() {
   	
-  	// do something with VR
+    // do something with VR
     if (GetAsyncKeyState(0x25)) // Left arrow (strelochka vlevo) povorot vlevo
     {
-      theta-=0.001;
+      theta-=0.01;
     }
     
     if (GetAsyncKeyState(0x27)) // Right arrow (strelochka vpravo) povorot vpravo
     {
-      theta+=0.001;
+      theta+=0.01;
     }
     
     if (GetAsyncKeyState(0x53) != 0) // S nazad
     {       
-      VR[2]+=0.10; 
+      VR[2]+=0.01; 
     }
     
     if (GetAsyncKeyState(0x57)) // W vpered
     {
-      VR[2]-=0.10; 
+      VR[2]-=0.01; 
     }
     
     if (GetAsyncKeyState(0x41)) // A vlevo
     {
-      VR[0]-=0.10;
+      VR[0]-=0.01;
     }
     
     if (GetAsyncKeyState(0x44)) // D vpravo
     {
-      VR[0]+=0.10;
+      VR[0]+=0.01;
     }
     
     if (GetAsyncKeyState(0x51)) { // Q vverh
-      VR[1]+=0.10;
+      VR[1]+=0.01;
     }
     
     if (GetAsyncKeyState(0x45)) { // E vniz
-      VR[1]-=0.10;
+      VR[1]-=0.01;
     }
-    
+	
+    if (GetAsyncKeyState(0x52)) { // R reset
+      VR[0] = 0.0;
+      VR[1] = 0.0;
+      VR[2] = 0.0;
+    }
+	
     thetaOver2 = theta * 0.5;
     x = 0.0;
     y = sin(thetaOver2);
     z = 0.0;
-    w = np.cos(thetaOver2);
+    w = cos(thetaOver2);
 
     VR[3] = w;
     VR[4] = x;
     VR[5] = y;
     VR[6] = z;
 
-    my_device.RanFrame(VR);
+    device->RunFrame(VR);
   
   vr::VREvent_t vrEvent;
   while (vr::VRServerDriverHost()->PollNextEvent(&vrEvent, sizeof(vrEvent))) {
