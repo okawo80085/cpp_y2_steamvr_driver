@@ -179,17 +179,23 @@ void CServerDriver_hobovr::RunFrame() {
     {
       theta+=0.01;
     }
+    //
+    //if (GetAsyncKeyState(0x53) != 0) // S nazad
+    //{       
+    //  VR[2]+=0.01; 
+    //}
     
-    if (GetAsyncKeyState(0x53) != 0) // S nazad
-    {       
-      VR[2]+=0.01; 
-    }
-    
-    if (GetAsyncKeyState(0x57)) // W vpered
+    //if (GetAsyncKeyState(0x57)) // W vpered
+    //{
+     // VR[2]-=0.01; 
+    //}
+    //
+	   POINT p; // - сокрощение названия переменной 'p' - позиция
+    if (GetCursorPos(&p)) // Текущая позиция курсора в 2-х мерном пространстве экрана по осям координат [X/Y]
     {
-      VR[2]-=0.01; 
+    	VR[0] = (double)p.x/1920 - 0.5;
+    	VR[2] = (double)p.y/1080 - 0.5;  
     }
-    
     if (GetAsyncKeyState(0x41)) // A vlevo
     {
       VR[0]-=0.01;
