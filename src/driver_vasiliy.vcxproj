@@ -175,9 +175,13 @@
     <ClInclude Include="driverlog.h" />
     <ClInclude Include="ref\hobovr_components.h" />
     <ClInclude Include="ref\hobovr_device_base.h" />
+    <ClInclude Include="ref\Matrix3x3.hpp" />
+    <ClInclude Include="ref\Quaternion.hpp" />
     <ClInclude Include="ref\receiver_linux.h" />
     <ClInclude Include="ref\receiver_win.h" />
     <ClInclude Include="ref\util.h" />
+    <ClInclude Include="ref\Vector2.hpp" />
+    <ClInclude Include="ref\Vector3.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

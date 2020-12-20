@@ -135,7 +135,7 @@ public:
   virtual void LeaveStandby() {}
   virtual void RunFrame();
 private:
-  float thera_x = 0.0; // x-axis rotation / povorot po osi x
+  float theta_x = 0.0; // x-axis rotation / povorot po osi x
   float theta_y = 0.0; // y-axis rotatinn / povorot po osi y
   float theta_z = 0.0; // z-axis rotation / povorot po osi z
   float x = 0.0;
@@ -227,13 +227,6 @@ void CServerDriver_hobovr::RunFrame() {
     //{
      // VR[2]-=0.01; 
     //}
-    //
-	   POINT p; // - сокрощение названия переменной 'p' - позиция
-    if (GetCursorPos(&p)) // Текущая позиция курсора в 2-х мерном пространстве экрана по осям координат [X/Y]
-    {
-    	tracker_pose[0] = (double)p.x/1920 - 0.5;
-    	tracker_pose[2] = (double)p.y/1080 - 0.5;  
-    }
     if (GetAsyncKeyState(0x41)) // A vlevo
     {
       tracker_pose[0]-=0.01;
