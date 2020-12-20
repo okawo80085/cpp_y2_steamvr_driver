@@ -27,6 +27,9 @@
 #include <ctime>
 #include <variant>
 
+#include "ref/Quaternion.hpp"
+#include "ref/Vector3.hpp"
+
 using namespace vr;
 
 #if defined(_WIN32)
@@ -132,13 +135,14 @@ public:
   virtual void LeaveStandby() {}
   virtual void RunFrame();
 private:
-  float thetaOver2 = 0.0;
-  float theta = 0.0;
+  float thera_x = 0.0; // x-axis rotation / povorot po osi x
+  float theta_y = 0.0; // y-axis rotatinn / povorot po osi y
+  float theta_z = 0.0; // z-axis rotation / povorot po osi z
   float x = 0.0;
   float y = 0.0;
   float z = 0.0;
   float w = 0.0;
-  std::vector<float> VR;
+  std::vector<float> tracker_pose; // Объявление вектора позиции
   std::shared_ptr<OurDevice> device;
 };
 
@@ -152,8 +156,8 @@ EVRInitError CServerDriver_hobovr::Init(vr::IVRDriverContext *pDriverContext) {
                             hobovr::k_nHobovrVersionBuild,
                             hobovr::k_sHobovrVersionGG.c_str());
 
-  VR = { 0, 0, 0, 1, 0, 0, 0 };
-	
+  tracker_pose = { 0, 0, 0, 1, 0, 0, 0 };
+
   device = std::make_shared<OurDevice>("glhf");
   vr::VRServerDriverHost()->TrackedDeviceAdded(
                     device->GetSerialNumber().c_str(), vr::TrackedDeviceClass_GenericTracker,
@@ -170,14 +174,48 @@ void CServerDriver_hobovr::Cleanup() {
 void CServerDriver_hobovr::RunFrame() {
   	
     // do something with VR
-    if (GetAsyncKeyState(0x25)) // Left arrow (strelochka vlevo) povorot vlevo
+  	
+  	// ПОВОРОТ ПО ОСИ X
+  	
+    if (GetAsyncKeyState(0x26)) // Up arrow - x-axis rotation (forward) / Strelka vverh - povorot po osi x (vpered)
     {
-      theta-=0.01;
+      theta_x-=0.01;
+    }
+  
+    if (GetAsyncKeyState(0x28)) // Down arrow - x-axis rotation (back) / Strelka vniz - povorot po osi x (nazad)
+    {
+      theta_x+=0.01;
     }
     
-    if (GetAsyncKeyState(0x27)) // Right arrow (strelochka vpravo) povorot vpravo
+  	// ПОВОРОТ ПО ОСИ Y
+  	
+    if (GetAsyncKeyState(0x25)) // Left arrow - y-axis rotation (left) / Strelka vlevo - povorot po osi y (vlevo)
     {
-      theta+=0.01;
+      theta_y-=0.01;
+    }
+    
+    if (GetAsyncKeyState(0x27)) // Right arrow - y-axis rotation (right) / Strelka vpravo - povorot po osi y (vpravo)
+    {
+      theta_y+=0.01;
+    }
+  	
+  	// ПОВОРОТ ПО ОСИ Z
+  	
+    if (GetAsyncKeyState(0x64)) // NUMPAD 4 key - z-axis rotation (tilt to the left)/ NUMPAD 4 - povorot po osi z (naklon vlevo)
+    {
+      theta_z-=0.01;
+    }
+    
+    if (GetAsyncKeyState(0x66)) // NUMPAD 6 key - z-axis rotation (tilt to the right) / NUMPAD 6 - povorot po osi z (naklon vpravo)
+    {
+      theta_z+=0.01;
+    }
+  	   POINT p; // - сокращение названия переменной 'p' - позиция
+    
+  if (GetCursorPos(&p)) // Текущая позиция курсора в 2-х мерном пространстве экрана по осям координат [X/Y]
+    {
+    	tracker_pose[0] = (double)p.x/1920 - 0.5;
+    	tracker_pose[2] = (double)p.y/1080 - 0.5;  
     }
     //
     //if (GetAsyncKeyState(0x53) != 0) // S nazad
@@ -193,45 +231,42 @@ void CServerDriver_hobovr::RunFrame() {
 	   POINT p; // - сокрощение названия переменной 'p' - позиция
     if (GetCursorPos(&p)) // Текущая позиция курсора в 2-х мерном пространстве экрана по осям координат [X/Y]
     {
-    	VR[0] = (double)p.x/1920 - 0.5;
-    	VR[2] = (double)p.y/1080 - 0.5;  
+    	tracker_pose[0] = (double)p.x/1920 - 0.5;
+    	tracker_pose[2] = (double)p.y/1080 - 0.5;  
     }
     if (GetAsyncKeyState(0x41)) // A vlevo
     {
-      VR[0]-=0.01;
+      tracker_pose[0]-=0.01;
     }
     
     if (GetAsyncKeyState(0x44)) // D vpravo
     {
-      VR[0]+=0.01;
+      tracker_pose[0]+=0.01;
     }
     
     if (GetAsyncKeyState(0x51)) { // Q vverh
-      VR[1]+=0.01;
+      tracker_pose[1]+=0.01;
     }
     
     if (GetAsyncKeyState(0x45)) { // E vniz
-      VR[1]-=0.01;
+      tracker_pose[1]-=0.01;
     }
 	
     if (GetAsyncKeyState(0x52)) { // R reset
-      VR[0] = 0.0;
-      VR[1] = 0.0;
-      VR[2] = 0.0;
+      tracker_pose[0] = 0.0;
+      tracker_pose[1] = 0.0;
+      tracker_pose[2] = 0.0;
     }
 	
-    thetaOver2 = theta * 0.5;
-    x = 0.0;
-    y = sin(thetaOver2);
-    z = 0.0;
-    w = cos(thetaOver2);
+	Vector3 eulerRot = Vector3(theta_x, theta_y, theta_z); // Convert from theta to 3D vector
+	Quaternion quatRot = Quaternion::FromEuler(eulerRot); // Conversion from 3D vector to quaternion (заполение полей объекта quatRot)
+    tracker_pose[3] = quatRot.W; 
+    tracker_pose[4] = quatRot.X;
+    tracker_pose[5] = quatRot.Y;
+    tracker_pose[6] = quatRot.Z;
 
-    VR[3] = w;
-    VR[4] = x;
-    VR[5] = y;
-    VR[6] = z;
 
-    device->RunFrame(VR);
+    device->RunFrame(tracker_pose);
   
   vr::VREvent_t vrEvent;
   while (vr::VRServerDriverHost()->PollNextEvent(&vrEvent, sizeof(vrEvent))) {
