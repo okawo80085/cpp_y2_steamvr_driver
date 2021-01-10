@@ -82,12 +82,24 @@ static const char* const k_pch_Hmd_UserHead2EyeDepthMeters_Float = "UserHeadToEy
 #include <time.h> // kruto
 #include <chrono>
 #include <cmath>
+#include <string>
 
 class OurDevice: public hobovr::HobovrDevice<false, false> {
 public:
   OurDevice(std::string ser):HobovrDevice(ser, "asdfnjkl") {
     m_sRenderModelPath = "{vasiliy}/rendermodels/hobovr_tracker_mt0"; 
     m_sBindPath = "{vasiliy}/input/hobovr_tracker_profile.json";
+
+    // auto val = vr::VRSettings()->GetFloat("vasiliy_device_hmd", "UserHeadToEyeDepthMeters");
+    // DriverLog("our val: %f", val);
+    // auto val2 = vr::VRSettings()->GetInt32("vasiliy_comp_extendedDisplay", "windowWidth");
+    // DriverLog("our val: %d", val2);
+    // auto val3 = vr::VRSettings()->GetBool("vasiliy_comp_extendedDisplay", "IsDisplayOnDesktop");
+    // DriverLog("our val: %d", val3);
+    // char buff[1024];
+    // vr::VRSettings()->GetString("driver_vasiliy", "blah", buff, sizeof(buff));
+    // std::string res = buff;
+    // DriverLog("our val: %s", res.c_str());
   }
 
   EVRInitError Activate(vr::TrackedDeviceIndex_t unObjectId) {
@@ -144,12 +156,15 @@ private:
   float w = 0.0;
   std::vector<float> tracker_pose; // Объявление вектора позиции
   std::shared_ptr<OurDevice> device;
+  float m_fCr = 0;
 };
 
 // yes
 EVRInitError CServerDriver_hobovr::Init(vr::IVRDriverContext *pDriverContext) {
   VR_INIT_SERVER_DRIVER_CONTEXT(pDriverContext);
   InitDriverLog(vr::VRDriverLog());
+
+  m_fCr = vr::VRSettings()->GetFloat("driver_vasiliy", "change_rate");
 
   DriverLog("driver: version: %d.%d.%d %s \n", hobovr::k_nHobovrVersionMajor,
                             hobovr::k_nHobovrVersionMinor,
@@ -179,36 +194,36 @@ void CServerDriver_hobovr::RunFrame() {
   	
     if (GetAsyncKeyState(0x26)) // Up arrow - x-axis rotation (forward) / Strelka vverh - povorot po osi x (vpered)
     {
-      theta_x-=0.01;
+      theta_x-=m_fCr;
     }
   
     if (GetAsyncKeyState(0x28)) // Down arrow - x-axis rotation (back) / Strelka vniz - povorot po osi x (nazad)
     {
-      theta_x+=0.01;
+      theta_x+=m_fCr;
     }
     
   	// ПОВОРОТ ПО ОСИ Y
   	
     if (GetAsyncKeyState(0x25)) // Left arrow - y-axis rotation (left) / Strelka vlevo - povorot po osi y (vlevo)
     {
-      theta_y-=0.01;
+      theta_y-=m_fCr;
     }
     
     if (GetAsyncKeyState(0x27)) // Right arrow - y-axis rotation (right) / Strelka vpravo - povorot po osi y (vpravo)
     {
-      theta_y+=0.01;
+      theta_y+=m_fCr;
     }
   	
   	// ПОВОРОТ ПО ОСИ Z
   	
     if (GetAsyncKeyState(0x64)) // NUMPAD 4 key - z-axis rotation (tilt to the left)/ NUMPAD 4 - povorot po osi z (naklon vlevo)
     {
-      theta_z-=0.01;
+      theta_z-=m_fCr;
     }
     
     if (GetAsyncKeyState(0x66)) // NUMPAD 6 key - z-axis rotation (tilt to the right) / NUMPAD 6 - povorot po osi z (naklon vpravo)
     {
-      theta_z+=0.01;
+      theta_z+=m_fCr;
     }
   	   POINT p; // - сокращение названия переменной 'p' - позиция
     
@@ -229,20 +244,20 @@ void CServerDriver_hobovr::RunFrame() {
     //}
     if (GetAsyncKeyState(0x41)) // A vlevo
     {
-      tracker_pose[0]-=0.01;
+      tracker_pose[0]-=m_fCr;
     }
     
     if (GetAsyncKeyState(0x44)) // D vpravo
     {
-      tracker_pose[0]+=0.01;
+      tracker_pose[0]+=m_fCr;
     }
     
     if (GetAsyncKeyState(0x51)) { // Q vverh
-      tracker_pose[1]+=0.01;
+      tracker_pose[1]+=m_fCr;
     }
     
     if (GetAsyncKeyState(0x45)) { // E vniz
-      tracker_pose[1]-=0.01;
+      tracker_pose[1]-=m_fCr;
     }
 	
     if (GetAsyncKeyState(0x52)) { // R reset
